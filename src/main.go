@@ -1,28 +1,37 @@
 package main
 
 import (
+	"net"
 	"sohosaiPatlite/src/sohosaiPatliteLib"
 	"time"
 )
 
 func main() {
-	sohosaiPatliteLib.NewPatlite("192.168.10.1")
+	p := sohosaiPatliteLib.Patlite{
+		Ipaddr: net.ParseIP("192.168.10.1"),
+		Red:    On,
+		Yellow: On,
+		Green:  On,
+	}
 	for {
-		sohosaiPatliteLib.SetPatlite(false, false, false, false)
+		p.SetPatlite(On, Off, Off, Off)
 		time.Sleep(500 * time.Millisecond)
-		sohosaiPatliteLib.SetPatlite(true, false, false, false)
+		p.SetPatlite(Off, On, Off, Off)
 		time.Sleep(100 * time.Millisecond)
-		sohosaiPatliteLib.SetPatlite(false, true, false, false)
+		p.SetPatlite(Off, Off, On, Off)
 		time.Sleep(100 * time.Millisecond)
-		sohosaiPatliteLib.SetPatlite(false, false, true, false)
+		p.SetPatlite(Off, Off, Off, On)
 		time.Sleep(100 * time.Millisecond)
-		sohosaiPatliteLib.SetPatlite(false, false, false, false)
+		p.SetPatlite(Off, Off, Off, Off)
 		time.Sleep(500 * time.Millisecond)
-		sohosaiPatliteLib.SetPatlite(false, false, true, false)
+		p.SetPatlite(On, On, On, On)
 		time.Sleep(100 * time.Millisecond)
-		sohosaiPatliteLib.SetPatlite(false, true, false, false)
+		p.SetPatlite(Off, Off, Off, Off)
 		time.Sleep(100 * time.Millisecond)
-		sohosaiPatliteLib.SetPatlite(true, false, false, false)
+		p.SetPatlite(On, On, On, On)
 		time.Sleep(100 * time.Millisecond)
 	}
 }
+
+var Off = sohosaiPatliteLib.PatlitePattern{Name: "off", ID: 0}
+var On = sohosaiPatliteLib.PatlitePattern{Name: "on", ID: 1}

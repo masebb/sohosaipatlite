@@ -4,47 +4,34 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"strconv"
 )
 
-type patlite struct {
+type Patlite struct {
 	Ipaddr net.IP
-	Red    bool // 実はモードがあるのでintにしたほうがいいかも
-	Yellow bool
-	Green  bool
-	Buzzer bool
+	Red    PatlitePattern
+	Yellow PatlitePattern
+	Green  PatlitePattern
+	Buzzer PatlitePattern
 }
 
-var p patlite
-
-func NewPatlite(ip string) {
-	p = patlite{
-		Ipaddr: net.ParseIP(ip),
-		Red:    false,
-		Yellow: false,
-		Green:  false,
-		Buzzer: false,
-	}
-	sendAlertToPatlite()
-}
-
-func SetPatlite(red bool, yellow bool, green bool, buzzer bool) {
+func (p *Patlite) SetPatlite(red PatlitePattern, yellow PatlitePattern, green PatlitePattern, buzzer PatlitePattern) {
 	p.Red = red
 	p.Yellow = yellow
 	p.Green = green
 	p.Buzzer = buzzer
-
-	sendAlertToPatlite()
+	p.sendAlertToPatlite()
 }
-func sendAlertToPatlite() {
+func (p *Patlite) sendAlertToPatlite() {
 	url := "http://" +
 		p.Ipaddr.String() +
 		"/api/control?alert=" +
-		boolToIntString(p.Red) +
-		boolToIntString(p.Yellow) +
-		boolToIntString(p.Green) +
+		strconv.Itoa(p.Red.ID) +
+		strconv.Itoa(p.Yellow.ID) +
+		strconv.Itoa(p.Green.ID) +
 		"0" + // 青は未使用
 		"0" + // 白は未使用
-		boolToIntString(p.Buzzer)
+		strconv.Itoa(p.Buzzer.ID)
 
 	log.Println("GET request to ", url)
 	resp, err := http.Get(url)
@@ -56,7 +43,7 @@ func sendAlertToPatlite() {
 	log.Println(resp)
 }
 
-func SendClearToPatlite() {
+func (p *Patlite) SendClearToPatlite() {
 	url := "http://" +
 		p.Ipaddr.String() +
 		"/api/control?clear=1"
@@ -67,9 +54,7 @@ func SendClearToPatlite() {
 	defer resp.Body.Close()
 }
 
-func boolToIntString(b bool) string {
-	if b {
-		return "1"
-	}
-	return "0"
+type PatlitePattern struct {
+	Name string
+	ID   int
 }
