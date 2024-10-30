@@ -23,6 +23,17 @@ type Patlite struct {
 	Buzzer PatlitePattern
 }
 
+func Init(Ipaddr net.IP) *Patlite {
+	p := &Patlite{
+		Ipaddr: Ipaddr,
+		Red:    Off,
+		Yellow: Off,
+		Green:  Off,
+		Buzzer: Off,
+	}
+	p.SendClearToPatlite()
+	return p
+}
 func (p *Patlite) SendClearToPatlite() {
 	url := "http://" +
 		p.Ipaddr.String() +
