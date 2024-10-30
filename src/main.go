@@ -2,8 +2,10 @@ package main
 
 import (
 	"net"
-	"sohosaiPatlite/src/sohosaiPatliteLib"
+
 	"time"
+
+	"github.com/sohosai/sopolight/src/sohosaiPatliteLib"
 )
 
 func main() {
