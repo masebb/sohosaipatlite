@@ -5,35 +5,11 @@ import (
 	"net"
 	"net/http"
 	"strconv"
-
-	"time"
 )
 
-func main() {
-	p := Patlite{
-		Ipaddr: net.ParseIP("192.168.10.1"),
-		Red:    On,
-		Yellow: On,
-		Green:  On,
-	}
-	for {
-		p.SetPatlite(On, Off, Off, Off)
-		time.Sleep(500 * time.Millisecond)
-		p.SetPatlite(Off, On, Off, Off)
-		time.Sleep(100 * time.Millisecond)
-		p.SetPatlite(Off, Off, On, Off)
-		time.Sleep(100 * time.Millisecond)
-		p.SetPatlite(Off, Off, Off, On)
-		time.Sleep(100 * time.Millisecond)
-		p.SetPatlite(Off, Off, Off, Off)
-		time.Sleep(500 * time.Millisecond)
-		p.SetPatlite(On, On, On, On)
-		time.Sleep(100 * time.Millisecond)
-		p.SetPatlite(Off, Off, Off, Off)
-		time.Sleep(100 * time.Millisecond)
-		p.SetPatlite(On, On, On, On)
-		time.Sleep(100 * time.Millisecond)
-	}
+type PatlitePattern struct {
+	Name string
+	ID   int
 }
 
 var Off = PatlitePattern{Name: "off", ID: 0}
@@ -47,14 +23,6 @@ type Patlite struct {
 	Buzzer PatlitePattern
 }
 
-func (p *Patlite) SetPatlite(red PatlitePattern, yellow PatlitePattern, green PatlitePattern, buzzer PatlitePattern) {
-	p.Red = red
-	p.Yellow = yellow
-	p.Green = green
-	p.Buzzer = buzzer
-	p.sendAlertToPatlite()
-}
-
 func (p *Patlite) SendClearToPatlite() {
 	url := "http://" +
 		p.Ipaddr.String() +
@@ -66,12 +34,7 @@ func (p *Patlite) SendClearToPatlite() {
 	defer resp.Body.Close()
 }
 
-type PatlitePattern struct {
-	Name string
-	ID   int
-}
-
-func (p *Patlite) sendAlertToPatlite() {
+func (p *Patlite) SendAlertToPatlite() {
 	url := "http://" +
 		p.Ipaddr.String() +
 		"/api/control?alert=" +
@@ -82,7 +45,6 @@ func (p *Patlite) sendAlertToPatlite() {
 		"0" + // 白は未使用
 		strconv.Itoa(p.Buzzer.ID)
 
-	log.Println("GET request to ", url)
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Println("Error at set: ", err)
