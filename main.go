@@ -1,7 +1,6 @@
 package sopolight
 
 import (
-	"log"
 	"net"
 	"net/http"
 	"strconv"
@@ -34,18 +33,19 @@ func Init(Ipaddr net.IP) *Patlite {
 	p.SendClearToPatlite()
 	return p
 }
-func (p *Patlite) SendClearToPatlite() {
+func (p *Patlite) SendClearToPatlite() error {
 	url := "http://" +
 		p.Ipaddr.String() +
 		"/api/control?clear=1"
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Println("Error at clear: ", err)
+		return err
 	}
 	defer resp.Body.Close()
+	return nil
 }
 
-func (p *Patlite) SendAlertToPatlite() {
+func (p *Patlite) SendAlertToPatlite() error {
 	url := "http://" +
 		p.Ipaddr.String() +
 		"/api/control?alert=" +
@@ -58,9 +58,9 @@ func (p *Patlite) SendAlertToPatlite() {
 
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Println("Error at set: ", err)
+		return err
 	}
 	defer resp.Body.Close()
 
-	log.Println(resp)
+	return nil
 }
