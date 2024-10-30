@@ -1,4 +1,4 @@
-package sopolight
+package main
 
 import (
 	"log"
